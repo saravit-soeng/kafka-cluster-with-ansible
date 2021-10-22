@@ -1,0 +1,6 @@
+- hosts: all
+  tasks:
+    - name: copy client keystore to all hosts for testing
+      copy:
+        src: ../keystore/
+        dest: /vagrant/kafka/keystore

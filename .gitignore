@@ -1,0 +1,27 @@
+*.pem
+*.jks
+*.attr
+*.old
+ca/index.txt
+ca/serial.txt
+
+kafka-connect-rabbitmq-source/target/
+
+# macOS
+kafka-connect-rabbitmq-source/.DS_Store
+
+# Eclipse
+kafka-connect-rabbitmq-source/.classpath
+kafka-connect-rabbitmq-source/.settings/
+kafka-connect-rabbitmq-source/.project
+
+# IntelliJ IDEA
+kafka-connect-rabbitmq-source/.idea/
+*.iml
+*.iws
+*.swp
+
+# Visual Studio Code
+kafka-connect-rabbitmq-source/.vscode/
+
+kafka-connect-rabbitmq-source/.pairs

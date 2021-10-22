@@ -1,0 +1,148 @@
+- hosts: all
+  become: yes
+  vars_files:
+    - ../vars/settings.yml
+
+  tasks:
+    - name: disable firewall
+      systemd:
+        name: firewalld
+        state: stopped
+        enabled: false
+        masked: no
+      ignore_errors: yes
+
+    - name: create group "{{ kafka_user }}"
+      group:
+        name: "{{ kafka_user }}"
+        state: present
+
+    - name: create user "{{ kafka_user }}"
+      user:
+        name: "{{ kafka_user }}"
+        password: NOT_LOGGING_PASSWORD
+        group: "{{ kafka_user }}"
+
+    # Java is already installed - if not uncomment the below block
+    # - name: Install JVM: '{{ jvm_package }}'
+    #   apt:
+    #     name: '{{ jvm_package }}'
+    #     state: latest
+
+    - name: create kafka package folder
+      file:
+        path: "{{ kafka_install_host_symlink }}"
+        state: directory
+        mode: 0755
+        group: "{{ kafka_user }}"
+        owner: "{{ kafka_user }}"
+ 
+    - name: download kakfa binary files, extract, and move to '{{ kafka_install_host_symlink }}'
+      shell: wget -c https://dlcdn.apache.org/kafka/2.8.0/kafka_2.13-2.8.0.tgz -O kafka.tgz && tar -xzf kafka.tgz -C {{ kafka_install_host_symlink }} --strip-components=1
+
+    - name: remove downloaded kafka zip file
+      shell: rm -f kafka.tgz
+
+    - name: change user and group for symlink "{{ kafka_install_host_symlink }}"
+      command: chown -R {{ kafka_user }}:{{ kafka_user }} {{ kafka_install_host_symlink }}
+
+    - name: set KAFKA_HOME
+      lineinfile:
+        dest: /home/{{ kafka_user }}/.bashrc
+        line: "export KAFKA_HOME={{ kafka_install_host_symlink }}"
+
+    - name: source bashrc
+      shell: su {{ kafka_user }} -c "source /home/{{ kafka_user }}/.bashrc"
+
+    # Set up zookeeper server cluster
+    - name: create data folder for zookeeper {{ zookeeper_data_dir }}
+      file:
+        path: "{{ zookeeper_data_dir }}"
+        state: directory
+        mode: 0755
+        group: "{{ kafka_user }}"
+        owner: "{{ kafka_user }}"
+
+    - name: create file zookeeper.properties
+      template:
+        src: ../templates/zookeeper-properties.j2
+        dest: "{{ kafka_install_host_symlink }}/config/zookeeper.properties"
+        mode: 0755
+    
+    - name: create file zookeeper.service
+      template:
+        src: ../templates/zookeeper.j2
+        dest: /etc/systemd/system/zookeeper.service
+        mode: 0755
+
+    - name: create myid and insert node id
+      lineinfile:
+        path: "{{ zookeeper_data_dir }}/myid"
+        line: "{{ groups.cluster.index(inventory_hostname)+1 }}"
+        create: yes
+    
+    - name: force systemd to reload cofigs
+      systemd:
+        daemon_reload: yes
+    
+    - name: enable service zookeeper.service and not masked
+      systemd:
+        name: zookeeper.service
+        enabled: yes
+        masked: no
+    
+    - name: start zookeeper service
+      systemd:
+        name: zookeeper.service
+        state: started
+
+    # Setup Kafka Brokers cluster
+    - name: Create data folder for kafka '{{ kafka_log_dirs }}'
+      file:
+        path: "{{ kafka_log_dirs }}"
+        state: directory
+        mode: 0755
+        group: "{{ kafka_user }}"
+        owner: "{{ kafka_user }}"
+    
+    - name: copy kafka server jaas config for SASL Scram
+      copy:
+        src: ../config/kafka_server_jaas.conf
+        dest: "{{ kafka_install_host_symlink }}/config/kafka_server_jaas.conf"
+
+    - name: create file {{ kafka_install_host_symlink }}/config/server.properties
+      template:
+        src: ../templates/kafka-properties.j2
+        dest: "{{ kafka_install_host_symlink }}/config/server.properties"
+        mode: 0755
+    
+    - set_fact:
+        zookeeper_connect: "{{ groups.cluster | join(':{{ zookeeper_port }},') }}:{{ zookeeper_port }}"
+        rendered_template: "{{ lookup('template', '../templates/kafka-properties.j2')}}"
+
+    - name: set zookeeper hosts in server.properties
+      replace:
+        path: "{{ kafka_install_host_symlink }}/config/server.properties"
+        regexp: 'zookeeper.connect=localhost:2181'
+        replace: "zookeeper.connect={{ zookeeper_connect }}"
+    
+    - name: create file kafka.service
+      template:
+        src: ../templates/kafka.j2
+        dest: /etc/systemd/system/kafka.service
+        mode: 0755
+
+    - name: force systemd to reload configs
+      systemd:
+        daemon_reload: yes
+
+    - name: enable service kafka.service and not masked
+      systemd:
+        name: kafka.service
+        enabled: yes
+        masked: no
+
+    - name: start kafka server
+      service:
+        name: kafka.service
+        state: started

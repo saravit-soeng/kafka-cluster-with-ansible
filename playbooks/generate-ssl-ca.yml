@@ -1,0 +1,43 @@
+- hosts: all
+  become: yes
+  become_user: kafka
+  vars_files:
+    - ../vars/settings.yml
+  tasks:
+    - name: create ssl directory inside kafka directory
+      file:
+        path: "{{ ssl_dir }}"
+        state: directory
+        mode: 0755
+        group: "{{ kafka_user }}"
+        owner: "{{ kafka_user }}"
+
+    - name: share the same ca for all machines
+      copy:
+        src: ../ca/
+        dest: "{{ ssl_dir }}"
+    
+    - name: share the same truststore for all machines
+      copy:
+        src: ../truststore/
+        dest: "{{ ssl_dir }}"
+
+    - name: copy openssl-ca config to all machines
+      copy:
+        src: ../config/openssl-ca.cnf
+        dest: "{{ ssl_dir }}/openssl-ca.cnf"
+
+    - name: create keystore
+      command: keytool -noprompt -keystore {{ ssl_dir }}/server.keystore.jks -alias localhost -validity 36500 -genkey -keyalg RSA -deststoretype pkcs12 -keypass 123456 -storepass 123456 -dname "CN=localhost, OU=Bigdatalabs, O=CBNU, L=Cheongju, S=Chungcheongbuk, C=KR"
+
+    - name: create certificate signing request 
+      command: keytool -noprompt -keystore {{ ssl_dir }}/server.keystore.jks -alias localhost -certreq -file {{ ssl_dir }}/ca-req.csr -storepass 123456
+    
+    - name: sign the certificate with CA
+      command: openssl ca -batch -config {{ ssl_dir }}/openssl-ca.cnf -policy signing_policy -extensions signing_req -out {{ ssl_dir }}/ca-signed.pem -infiles {{ ssl_dir }}/ca-req.csr
+
+    - name: import ca into keystore
+      command: keytool -noprompt -keystore {{ ssl_dir }}/server.keystore.jks -alias CARoot -import -file {{ ssl_dir }}/cacert.pem -storepass 123456
+
+    - name: import certificate signed by ca into keystore
+      command: keytool -noprompt -keystore {{ ssl_dir }}/server.keystore.jks -alias localhost -import -file {{ ssl_dir }}/ca-signed.pem -storepass 123456

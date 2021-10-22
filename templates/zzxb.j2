@@ -1,0 +1,9 @@
+sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule required username="{{ scram_producer_user }}" password="{{ scram_producer_password }}";
+security.protocol=SASL_SSL
+sasl.mechanism=SCRAM-SHA-256
+ssl.truststore.location={{ ssl_dir }}/client.truststore.jks
+ssl.truststore.password=123456
+ssl.keystore.location=/vagrant/kafka/keystore/client.keystore.jks
+ssl.keystore.password=123456
+ssl.key.password=123456
+ssl.endpoint.identification.algorithm=

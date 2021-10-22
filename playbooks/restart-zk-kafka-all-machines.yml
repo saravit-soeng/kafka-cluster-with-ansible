@@ -1,0 +1,8 @@
+- hosts: all
+  become: yes
+  tasks:
+    - name: restart zookeeper on all machines
+      shell: systemctl restart zookeeper
+
+    - name: restart kafka on all machines
+      shell: systemctl restart kafka

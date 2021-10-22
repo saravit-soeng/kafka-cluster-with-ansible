@@ -1,0 +1,86 @@
+# Kafka settings
+kafka_install_host_symlink: /opt/kafka
+kafka_user: kafka
+ssl_dir: /opt/kafka/ssl
+
+# JVM for Kafka and Zookeeper
+jvm_package: java-1.8.0-openjdk-level
+
+# Kafka JVM
+kafka_heap_opts: -Xmx256M -Xms128M
+kafka_jmx_opts: -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.net.preferIPv4Stack=true -Dcom.sun.management.jmxremote.port=9990 -Djava.security.auth.login.config=/opt/kafka/config/kafka_server_jaas.conf
+kakfa_gc_log_opts:
+kafka_opts:
+
+# Kafka - server.properties [1]
+# common properties with default values
+kafka_log_dirs: /var/lib/kafka
+kafka_listeners_port: 9092
+kafka_advertised_listeners:
+kafka_num_network_threads: 3
+kafka_num_io_threads: 8
+kafka_num_partitions: 3
+kafka_default_replication_factor: 3
+kafka_offsets_topic_replication_factor: 3
+kafka_transaction_state_log_replication_factor: 3
+kafka_transaction_state_log_min_isr: 3
+kafka_log_retention_hours: 168
+kafka_log_segment_bytes: 1073741824
+kafka_log_retention_check_interval_ms: 300000
+kafka_zookeeper_connection_timeout_ms: 6000
+kafka_group_initial_rebalance_delay_ms: 0
+kafka_socket_send_buffer_bytes: 102400
+kafka_socket_receive_buffer_bytes: 102400
+kafka_socket_request_max_bytes: 104857600
+
+# Kafka - server.properties [2]
+# Extra settings. See https://kafka.apache.org/documentation/
+# included the prefix kafka_ in the attribute and change "." for "_"
+kafka_properties: 
+  - key: kafka_auto_create_topics_enable
+    value: true 
+  - key: kafka_ssl_keystore_location
+    value: /opt/kafka/ssl/server.keystore.jks
+  - key: kafka_ssl_keystore_password
+    value: 123456
+  - key: kafka_ssl_key_password
+    value: 123456
+  - key: kafka_ssl_truststore_location
+    value: /opt/kafka/ssl/server.truststore.jks
+  - key: kafka_ssl_truststore_password
+    value: 123456
+  - key: kafka_auto_leader_rebalance_enable
+    value:       
+  - key: kafka_background_threads
+    value:       
+  - key: kafka_control_plane_listener_name
+    value:             
+  - key: kafka_delete_topic_enable
+    value:
+  - key: kafka_ssl_client_auth
+    value: required
+  - key: kafka_ssl_enabled_protocols
+    value: TLSv1.2
+  - key: kafka_security_inter_broker_protocol
+    value: SASL_SSL
+  - key: kafka_sasl_mechanism_inter_broker_protocol
+    value: SCRAM-SHA-256
+  - key: kafka_sasl_enabled_mechanisms
+    value: SCRAM-SHA-256 
+
+# Zookeeper - zookeeper.properties
+zookeeper_data_dir: /var/lib/zookeeper
+zookeeper_port: 2181
+zookeeper_init_limit: 5
+zookeeper_sync_limit: 2
+
+# Client Credentials with SCRAM
+scram_admin_user: admin
+scram_admin_password: admin123456
+
+# Client Credentials with SCRAM
+scram_producer_user: zzxb
+scram_producer_password: mypasswordhahah
+
+scram_consumer_user: zzxb1
+scram_consumer_password: mypasswordhahah1

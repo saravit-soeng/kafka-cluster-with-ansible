@@ -1,0 +1,85 @@
+- hosts: cluster
+  become: yes
+  vars_files:
+    - ../vars/settings.yml
+  tasks:
+    - name: Check if Service Exists
+      stat: path=/etc/systemd/system/kafka-connect.service
+      register: service_status
+
+    - name: stop all instances on kafka connect cluster
+      systemd: 
+        name: kafka-connect.service
+        state: stopped
+      when: service_status.stat.exists
+      
+    - name: create plugins directory inside kafka directory
+      file:
+        path: "{{ kafka_install_host_symlink }}/plugins"
+        state: directory
+        mode: 0755
+        group: "{{ kafka_user }}"
+        owner: "{{ kafka_user }}"
+    
+    - name: clear rabbitmq old jar file
+      file:
+        path: "{{ kafka_install_host_symlink }}/plugins/kafka-connect-rabbitmq-source-1.0-SNAPSHOT-jar-with-dependencies.jar"
+        state: absent
+        
+    - name: copy rabbitmq connector source jar file to broker
+      copy:
+        src: ../kafka-connect-rabbitmq-source/target/kafka-connect-rabbitmq-source-1.0-SNAPSHOT-jar-with-dependencies.jar
+        dest: "{{ kafka_install_host_symlink }}/plugins/kafka-connect-rabbitmq-source-1.0-SNAPSHOT-jar-with-dependencies.jar"
+        owner: "{{ kafka_user }}"
+        group: "{{ kafka_user }}"
+    
+    - name: copy kafka connect service script to each broker
+      copy:
+        src: ../scripts/stop-kafka-connect-service.sh
+        dest: "{{ kafka_install_host_symlink }}/bin/stop-kafka-connect-service.sh"
+
+    - name: copy config file to each brokers
+      template:
+        src: ../templates/connect-distributed.j2
+        dest: "{{ kafka_install_host_symlink }}/config/connect-distributed-modified.properties"
+        owner: "{{ kafka_user }}"
+        group: "{{ kafka_user }}"
+        mode: 0755
+    
+    - name: change ownership of kafka connect log file to {{ kafka_user }} in case it changed to root
+      file:
+        path: "{{ kafka_install_host_symlink }}/logs/connect.log"
+        group: "{{ kafka_user }}"
+        owner: "{{ kafka_user }}"
+
+    - set_fact:
+        kafka_connect: "{{ groups.cluster | join(':{{ kafka_listeners_port }},') }}:{{ kafka_listeners_port }}"
+        rendered_template: "{{ lookup('template', '../templates/connect-distributed-modified.j2')}}"
+
+    - name: set zookeeper hosts in server.properties
+      replace:
+        path: "{{ kafka_install_host_symlink }}/config/connect-distributed-modified.properties"
+        regexp: 'bootstrap.servers=localhost:9092'
+        replace: "bootstrap.servers={{kafka_connect}}"
+    
+    - name: create file kafka.service
+      template:
+        src: ../templates/kafka-connect.j2
+        dest: /etc/systemd/system/kafka-connect.service
+        mode: 0755
+
+    - name: force systemd to reload configs
+      systemd:
+        daemon_reload: yes
+
+    - name: enable service kafka.service and not masked
+      systemd:
+        name: kafka-connect.service
+        enabled: yes
+        masked: no
+
+    - name: start kafka server
+      service:
+        name: kafka-connect.service
+        state: started
+      

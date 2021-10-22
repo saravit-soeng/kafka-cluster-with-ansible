@@ -1,0 +1,3 @@
+Example with rabbitmq  
+--------------------
+curl -X POST -H 'Content-Type: application/json' --data @/vagrant/kafka/connectors/rabbitmq-source.json http://192.168.0.7:8083/connectors
