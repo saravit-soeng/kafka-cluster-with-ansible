@@ -1,0 +1,17 @@
+{
+    "name": "RabbitMQSourceConnector1",
+    "config": {
+        "connector.class": "com.ibm.eventstreams.connect.rabbitmqsource.RabbitMQSourceConnector",
+        "tasks.max": "10",
+        "kafka.topic": "cm_sensor",
+        "rabbitmq.queue": "cm_sensor",
+        "rabbitmq.hosts": "192.168.0.7,192.168.0.11,192.168.0.12",
+        "rabbitmq.port": "5671", 
+        "rabbitmq.username": "zzxb",
+        "rabbitmq.password": "zzxb12345",
+        "rabbitmq.prefetch.count": "500",
+        "rabbitmq.automatic.recovery.enabled": "true",
+        "rabbitmq.network.recovery.interval.ms": "5000",
+        "rabbitmq.topology.recovery.enabled": "true"
+    }
+}
