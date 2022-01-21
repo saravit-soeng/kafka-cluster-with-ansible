@@ -4,6 +4,39 @@
   vars_files:
     - ../vars/settings.yml
   tasks:
+    - name: disable firewall
+      systemd:
+        name: firewalld
+        state: stopped
+        enabled: false
+        masked: no
+      ignore_errors: yes
+
+    - name: create group "{{ kafka_user }}"
+      group:
+        name: "{{ kafka_user }}"
+        state: present
+
+    - name: create user "{{ kafka_user }}"
+      user:
+        name: "{{ kafka_user }}"
+        password: NOT_LOGGING_PASSWORD
+        group: "{{ kafka_user }}"
+
+    # Java is already installed - if not uncomment the below block
+    # - name: Install JVM: '{{ jvm_package }}'
+    #   apt:
+    #     name: '{{ jvm_package }}'
+    #     state: latest
+
+    - name: create kafka package folder
+      file:
+        path: "{{ kafka_install_host_symlink }}"
+        state: directory
+        mode: 0755
+        group: "{{ kafka_user }}"
+        owner: "{{ kafka_user }}"
+        
     - name: create ssl directory inside kafka directory
       file:
         path: "{{ ssl_dir }}"
