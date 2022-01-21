@@ -1,6 +1,7 @@
 # Kafka settings
 kafka_install_host_symlink: /opt/kafka
 kafka_user: kafka
+kafka_password: kafka
 ssl_dir: /opt/kafka/ssl
 
 # JVM for Kafka and Zookeeper
