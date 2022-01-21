@@ -52,12 +52,12 @@ Restart the cluster to apply change
 ansible-playbook -i inventory/hosts playbooks/restart-zk-kafka-all-machines.yml
 ```
 
-Generate client keystore for any usages or testing
+Generate client keystore for cluster inter-connection or testing
 ```bash
 ./scripts/generate-client-ks.sh
 ```
 
-Then copy client keystore for all hosts for testing
+Then copy client keystore for all hosts for inter-connection or testing
 ```bash
 ansible-playbook -i inventory/hosts playbooks/copy-client-ks-to-all-hosts.yml
 ```
