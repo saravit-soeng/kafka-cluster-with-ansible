@@ -15,6 +15,12 @@ ansible_python_interpreter=/usr/bin/python3
 
 Ansible variables and templates are defined in advanced as in __vars/settings.yml__ and in __templates__ folder, respectively. Some kafka and openssl (for tls/ssl) configuration is configured in __config__ folder.
 
+First, run the following script to set up the prerequisite
+
+```bash
+ansible-playbook -i inventory/hosts playbooks/setup-prerequisite.yml
+```
+
 Generate Certificate authority and truststore using openssl and java keytool for SSL/TLS Security enabled on Kafka cluster
 ```bash
 ./scripts/generate-ca-ts.sh
@@ -23,6 +29,12 @@ Generate Certificate authority and truststore using openssl and java keytool for
 Now share the same CA and truststore for all machines, signed the certificate (self-signed), and generate keystore
 ```bash
 ansible-playbook -i inventory/hosts playbooks/generate-ssl-ca.yml
+```
+
+__**note__
+In case of error with keytool with the created user "kafka", follow the below command as example:
+```
+sudo ln -s /opt/jdk1.8.0_261/bin/keytool /usr/bin/keytool
 ```
 
 Now install kafka cluster with ansible script:
