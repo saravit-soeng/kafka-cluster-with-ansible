@@ -70,6 +70,12 @@ For SSL configuration with RabbitMQ, make sure to copy all RabbitMQ SSL certific
 keytool -import -alias server1 -file server_certificate.pem -keystore rabbitstore.jks
 ```
 
+Then righ here in the __kafka-connect-rabbitmq-source__ folder, run
+
+```bash
+mvn clean package
+```
+
 Now set up Kafka Connect Source cluster
 ```bash
 ansible-playbook -i inventory/hosts playbooks/setup-kafka-connect-source-cluster.yml
