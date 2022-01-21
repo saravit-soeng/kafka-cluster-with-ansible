@@ -45,16 +45,10 @@
         owner: "{{ kafka_user }}"
         group: "{{ kafka_user }}"
         mode: 0755
-    
-    - name: change ownership of kafka connect log file to {{ kafka_user }} in case it changed to root
-      file:
-        path: "{{ kafka_install_host_symlink }}/logs/connect.log"
-        group: "{{ kafka_user }}"
-        owner: "{{ kafka_user }}"
 
     - set_fact:
         kafka_connect: "{{ groups.cluster | join(':{{ kafka_listeners_port }},') }}:{{ kafka_listeners_port }}"
-        rendered_template: "{{ lookup('template', '../templates/connect-distributed-modified.j2')}}"
+        rendered_template: "{{ lookup('template', '../templates/connect-distributed.j2')}}"
 
     - name: set zookeeper hosts in server.properties
       replace:
@@ -82,4 +76,10 @@
       service:
         name: kafka-connect.service
         state: started
+
+    - name: change ownership of kafka connect log file to {{ kafka_user }} in case it changed to root
+      file:
+        path: "{{ kafka_install_host_symlink }}/logs/connect.log"
+        group: "{{ kafka_user }}"
+        owner: "{{ kafka_user }}"
       
