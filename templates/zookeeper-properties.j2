@@ -14,6 +14,8 @@
 # limitations under the License.
 # the directory where the snapshot is stored.
 dataDir={{ zookeeper_data_dir }}
+# address at which client connections
+clientPortAddress={{ inventory_hostname }}
 # the port at which the clients will connect
 clientPort={{ zookeeper_port }}
 # disable the per-ip limit on the number of connections since this is a non-production config
