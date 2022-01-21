@@ -52,6 +52,12 @@ ansible-playbook -i inventory/hosts playbooks/copy-client-ks-to-all-hosts.yml
 
 Generate the kafka connect source for rabbitmq jar file (check in __kafka-connect-rabbitmq-source__ folder, [original source: https://github.com/ibm-messaging/kafka-connect-rabbitmq-source]). We have customed the source code to fit with our design and implementation purpose.
 
+For SSL configuration with RabbitMQ, make sure to copy all RabbitMQ SSL certificates into __kafka-connect-rabbitmq-source/src/main/resources__ folder and then goto that folder, generate a java keystore file (.jks) for storing server certificate with following script
+
+```bash
+keytool -import -alias server1 -file server_certificate.pem -keystore rabbitstore.jks
+```
+
 Now set up Kafka Connect Source cluster
 ```bash
 ansible-playbook -i inventory/hosts playbooks/setup-kafka-connect-source-cluster.yml
