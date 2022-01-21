@@ -15,6 +15,12 @@ ansible_python_interpreter=/usr/bin/python3
 
 Ansible variables and templates are defined in advanced as in __vars/settings.yml__ and in __templates__ folder, respectively. Some kafka and openssl (for tls/ssl) configuration is configured in __config__ folder.
 
+First, run the following script to set up the prerequisite
+
+```bash
+ansible-playbook -i inventory/hosts playbooks/setup-prerequisite.yml
+```
+
 Generate Certificate authority and truststore using openssl and java keytool for SSL/TLS Security enabled on Kafka cluster
 ```bash
 ./scripts/generate-ca-ts.sh
@@ -23,6 +29,12 @@ Generate Certificate authority and truststore using openssl and java keytool for
 Now share the same CA and truststore for all machines, signed the certificate (self-signed), and generate keystore
 ```bash
 ansible-playbook -i inventory/hosts playbooks/generate-ssl-ca.yml
+```
+
+__**note__
+In case of error with keytool with the created user "kafka", follow the below command as example on all nodes:
+```
+sudo ln -s /opt/jdk1.8.0_261/bin/keytool /usr/bin/keytool
 ```
 
 Now install kafka cluster with ansible script:
@@ -40,12 +52,12 @@ Restart the cluster to apply change
 ansible-playbook -i inventory/hosts playbooks/restart-zk-kafka-all-machines.yml
 ```
 
-Generate client keystore for any usages or testing
+Generate client keystore for cluster inter-connection or testing
 ```bash
 ./scripts/generate-client-ks.sh
 ```
 
-Then copy client keystore for all hosts for testing
+Then copy client keystore to ssl directory of kafka on all hosts for inter-connection or testing
 ```bash
 ansible-playbook -i inventory/hosts playbooks/copy-client-ks-to-all-hosts.yml
 ```
@@ -56,6 +68,12 @@ For SSL configuration with RabbitMQ, make sure to copy all RabbitMQ SSL certific
 
 ```bash
 keytool -import -alias server1 -file server_certificate.pem -keystore rabbitstore.jks
+```
+
+Then righ here in the __kafka-connect-rabbitmq-source__ folder, run
+
+```bash
+mvn clean package
 ```
 
 Now set up Kafka Connect Source cluster
