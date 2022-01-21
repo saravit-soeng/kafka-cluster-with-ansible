@@ -57,7 +57,7 @@ Generate client keystore for cluster inter-connection or testing
 ./scripts/generate-client-ks.sh
 ```
 
-Then copy client keystore for all hosts for inter-connection or testing
+Then copy client keystore to ssl directory of kafka on all hosts for inter-connection or testing
 ```bash
 ansible-playbook -i inventory/hosts playbooks/copy-client-ks-to-all-hosts.yml
 ```
