@@ -32,7 +32,7 @@ ansible-playbook -i inventory/hosts playbooks/generate-ssl-ca.yml
 ```
 
 __**note__
-In case of error with keytool with the created user "kafka", follow the below command as example:
+In case of error with keytool with the created user "kafka", follow the below command as example on all nodes:
 ```
 sudo ln -s /opt/jdk1.8.0_261/bin/keytool /usr/bin/keytool
 ```
