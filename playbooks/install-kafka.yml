@@ -38,7 +38,7 @@
         owner: "{{ kafka_user }}"
  
     - name: download kakfa binary files, extract, and move to '{{ kafka_install_host_symlink }}'
-      shell: wget -c https://dlcdn.apache.org/kafka/2.8.0/kafka_2.13-2.8.0.tgz -O kafka.tgz && tar -xzf kafka.tgz -C {{ kafka_install_host_symlink }} --strip-components=1
+      shell: wget -c https://archive.apache.org/dist/kafka/2.8.0/kafka_2.13-2.8.0.tgz -O kafka.tgz && tar -xzf kafka.tgz -C {{ kafka_install_host_symlink }} --strip-components=1
 
     - name: remove downloaded kafka zip file
       shell: rm -f kafka.tgz
