@@ -1,5 +1,6 @@
 *.pem
 *.jks
+*.p12
 *.attr
 *.old
 ca/index.txt
