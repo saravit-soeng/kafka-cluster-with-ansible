@@ -37,6 +37,17 @@ In case of error with keytool with the created user "kafka", follow the below co
 sudo ln -s /opt/jdk1.8.0_261/bin/keytool /usr/bin/keytool
 ```
 
+
+Generate client keystore for kafka cluster connection or testing
+```bash
+./scripts/generate-client-ks.sh
+```
+
+Then copy client keystore to ssl directory of kafka on all hosts for inter-connection or testing
+```bash
+ansible-playbook -i inventory/hosts playbooks/copy-client-ks-to-all-hosts.yml
+```
+
 Now install kafka cluster with ansible script:
 ```bash
 ansible-playbook -i inventory/hosts playbooks/install-kafka.yml
@@ -45,21 +56,6 @@ ansible-playbook -i inventory/hosts playbooks/install-kafka.yml
 Create security credential for admin and client users
 ```bash
 ansible-playbook -i inventory/hosts playbooks/add-security-credentials.yml
-```
-
-Restart the cluster to apply change
-```bash
-ansible-playbook -i inventory/hosts playbooks/restart-zk-kafka-all-machines.yml
-```
-
-Generate client keystore for cluster inter-connection or testing
-```bash
-./scripts/generate-client-ks.sh
-```
-
-Then copy client keystore to ssl directory of kafka on all hosts for inter-connection or testing
-```bash
-ansible-playbook -i inventory/hosts playbooks/copy-client-ks-to-all-hosts.yml
 ```
 
 Generate the kafka connect source for rabbitmq jar file (check in __kafka-connect-rabbitmq-source__ folder, [original source: https://github.com/ibm-messaging/kafka-connect-rabbitmq-source]). We have customed the source code to fit with our design and implementation purpose.
