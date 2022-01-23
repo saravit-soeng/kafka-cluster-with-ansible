@@ -30,6 +30,11 @@
         group: "{{ kafka_user }}"
         owner: "{{ kafka_user }}"
 
+    - name: copy zookeeper jaas config for SASL Scram
+      copy:
+        src: ../config/zookeeper_jaas.conf
+        dest: "{{ kafka_install_host_symlink }}/config/zookeeper_jaas.conf"
+
     - name: create file zookeeper.properties
       template:
         src: ../templates/zookeeper-properties.j2

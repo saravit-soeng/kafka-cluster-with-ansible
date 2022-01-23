@@ -8,10 +8,11 @@ ssl_dir: /opt/kafka/ssl
 jvm_package: java-1.8.0-openjdk-level
 
 # Kafka JVM
-kafka_heap_opts: -Xmx256M -Xms128M
+kafka_heap_opts: -Xmx1024M -Xms128M
 kafka_jmx_opts: -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.net.preferIPv4Stack=true -Dcom.sun.management.jmxremote.port=9990 -Djava.security.auth.login.config=/opt/kafka/config/kafka_server_jaas.conf
 kakfa_gc_log_opts:
 kafka_opts:
+zk_opts: -Djava.security.auth.login.config=/opt/kafka/config/zookeeper_jaas.conf -Dquorum.auth.enableSasl=true -Dquorum.auth.learnerRequireSasl=true -Dquorum.auth.serverRequireSasl=true -Dquorum.cnxn.threads.size=20 -DjaasLoginRenew=3600000 -DrequireClientAuthScheme=sasl -Dquorum.auth.learner.loginContext=QuorumLearner -Dquorum.auth.server.loginContext=QuorumServer -Dzookeeper.authProvider.1=org.apache.zookeeper.server.auth.SASLAuthenticationProvider -Dzookeeper.authProvider.2=org.apache.zookeeper.server.auth.DigestAuthenticationProvider
 
 # Kafka - server.properties [1]
 # common properties with default values
