@@ -72,7 +72,7 @@
         enabled: yes
         masked: no
 
-    - name: start kafka server
+    - name: start kafka-connect service
       service:
         name: kafka-connect.service
         state: started
