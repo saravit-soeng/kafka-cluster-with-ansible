@@ -68,6 +68,9 @@
         name: zookeeper.service
         state: started
 
+    - name: create SCRAM (Salted Challenge Response Authentication Mechanism) for admin
+      shell: "{{ kafka_install_host_symlink }}/bin/kafka-configs.sh --zookeeper {{ inventory_hostname }}:{{ zookeeper_port }} --alter --add-config 'SCRAM-SHA-256=[password={{ scram_admin_password }}]' --entity-type users --entity-name {{ scram_admin_user }}"
+
     # Setup Kafka Brokers cluster
     - name: Create data folder for kafka '{{ kafka_log_dirs }}'
       file:
