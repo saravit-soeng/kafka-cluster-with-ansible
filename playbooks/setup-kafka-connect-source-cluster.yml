@@ -38,6 +38,16 @@
         src: ../scripts/stop-kafka-connect-service.sh
         dest: "{{ kafka_install_host_symlink }}/bin/stop-kafka-connect-service.sh"
 
+    - name: copy kafka connect password file to config folder of kafka
+      copy:
+        src: ../config/connect.password
+        dest: "{{ kafka_install_host_symlink }}/config/connect.password"
+
+    - name: copy kafka connect jaas file to config folder of kafka
+      copy:
+        src: ../config/connect_jaas.conf
+        dest: "{{ kafka_install_host_symlink }}/config/connect_jaas.conf"
+
     - name: copy config file to each brokers
       template:
         src: ../templates/connect-distributed.j2

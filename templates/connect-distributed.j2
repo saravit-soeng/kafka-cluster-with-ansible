@@ -106,3 +106,6 @@ producer.ssl.keystore.location={{ssl_dir}}/client.keystore.jks
 producer.ssl.keystore.password=123456
 producer.ssl.key.password=123456
 producer.ssl.endpoint.identification.algorithm=
+
+# kafka connect basic authentication enabled
+rest.extension.classes=org.apache.kafka.connect.rest.basic.auth.extension.BasicAuthSecurityRestExtension

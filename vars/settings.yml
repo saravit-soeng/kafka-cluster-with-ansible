@@ -14,6 +14,8 @@ kakfa_gc_log_opts:
 kafka_opts:
 zk_opts: -Djava.security.auth.login.config=/opt/kafka/config/zookeeper_jaas.conf -Dquorum.auth.enableSasl=true -Dquorum.auth.learnerRequireSasl=true -Dquorum.auth.serverRequireSasl=true -Dquorum.cnxn.threads.size=20 -DjaasLoginRenew=3600000 -DrequireClientAuthScheme=sasl -Dquorum.auth.learner.loginContext=QuorumLearner -Dquorum.auth.server.loginContext=QuorumServer -Dzookeeper.authProvider.1=org.apache.zookeeper.server.auth.SASLAuthenticationProvider -Dzookeeper.authProvider.2=org.apache.zookeeper.server.auth.DigestAuthenticationProvider
 
+connect_opts: -Djava.security.auth.login.config=/opt/kafka/config/connect_jaas.conf
+
 # Kafka - server.properties [1]
 # common properties with default values
 kafka_log_dirs: /var/lib/kafka

@@ -6,6 +6,8 @@ Documentation=http://kafka.apache.org/documentation.html
 User={{ kafka_user }}
 Group={{ kafka_user }}
 
+Environment="KAFKA_OPTS={{ connect_opts }}"
+
 Type=simple
 ExecStart={{ kafka_install_host_symlink }}/bin/connect-distributed.sh {{ kafka_install_host_symlink }}/config/connect-distributed-modified.properties
 ExecStop={{ kafka_install_host_symlink }}/bin/stop-kafka-connect-service.sh

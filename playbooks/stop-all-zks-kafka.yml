@@ -1,0 +1,14 @@
+- hosts: all
+  become: yes
+  tasks:
+    - name: stop zookeeper on all machines
+      shell: systemctl stop zookeeper
+
+    - name: delete data dir
+      shell: rm -rf /var/lib/zookeeper
+
+    - name: stop kafka on all machines
+      shell: systemctl stop kafka
+
+    - name: delete log dir
+      shell: rm -rf /var/lib/kafka
